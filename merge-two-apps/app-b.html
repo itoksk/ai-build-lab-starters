@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>App B — Feature-rich</title>
+  <style>
+    body { font-family:system-ui,sans-serif; max-width:380px; margin:40px auto; padding:0 16px; color:#111; }
+    h1 { font-size:1.2rem; }
+    .count { font-size:3rem; font-weight:700; text-align:center; margin:16px 0; }
+    .row { display:flex; gap:8px; justify-content:center; }
+    button { padding:10px 18px; font-size:1rem; border:1px solid #999; border-radius:8px; background:#f3f3f3; cursor:pointer; }
+    .log { margin-top:20px; font-size:.85rem; color:#555; }
+    .log li { margin:2px 0; }
+  </style>
+</head>
+<body>
+  <h1>Tally Counter</h1>
+  <div class="count" id="count">0</div>
+  <div class="row">
+    <button onclick="bump(-1)">−1</button>
+    <button onclick="reset()">reset</button>
+    <button onclick="bump(1)">+1</button>
+  </div>
+  <ul class="log" id="log"></ul>
+
+  <script>
+    let n = 0;
+    const out = document.getElementById('count');
+    const log = document.getElementById('log');
+
+    function render() { out.textContent = n; }
+
+    function bump(d) {
+      n += d;
+      render();
+      const li = document.createElement('li');
+      li.textContent = `${new Date().toLocaleTimeString()} → ${n}`;
+      log.prepend(li);
+      while (log.children.length > 5) log.lastChild.remove();
+    }
+
+    function reset() { n = 0; render(); log.innerHTML = ''; }
+    render();
+  </script>
+</body>
+</html>

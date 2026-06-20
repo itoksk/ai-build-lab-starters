@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Fortune</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:Georgia,serif; background:radial-gradient(circle at 50% 20%,#2a1a4a,#0d0820); color:#f0e9ff; min-height:100vh; display:grid; place-content:center; text-align:center; padding:24px; }
+    h1 { font-size:2rem; letter-spacing:.1em; margin-bottom:6px; }
+    .sub { opacity:.6; margin-bottom:30px; font-size:.9rem; }
+    .orb { width:160px; height:160px; margin:0 auto 28px; border-radius:50%;
+      background:radial-gradient(circle at 35% 30%,#fff,#b18cff 40%,#6a3bd8 70%,#2a1a4a);
+      box-shadow:0 0 50px #6a3bd8; animation:float 4s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-12px); } }
+    #result { min-height:3.2em; font-size:1.5rem; font-style:italic; max-width:420px; margin:0 auto 26px; transition:opacity .4s; }
+    .reveal { animation:fade .6s ease; }
+    @keyframes fade { from { opacity:0; transform:translateY(10px); } }
+    button { background:none; border:2px solid #b18cff; color:#f0e9ff; border-radius:99px; padding:14px 34px; font:inherit; font-size:1.1rem; cursor:pointer; transition:.2s; }
+    button:hover { background:#b18cff; color:#2a1a4a; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Daily Fortune</h1>
+    <p class="sub">Tap the orb. Trust the universe.</p>
+    <div class="orb"></div>
+    <div id="result">…</div>
+    <button onclick="tell()">Reveal my fortune</button>
+  </main>
+
+  <script>
+    // Theme of the fortunes: encouraging / playful — edit FORTUNES freely
+    const FORTUNES = [
+      "Today, the bug you fear is one print() away from fixing itself.",
+      "A small step you take now becomes tomorrow's shortcut.",
+      "Someone will say yes if you just ask. Ask.",
+      "The idea you keep ignoring is the one worth building.",
+      "Rest is not a reward for finishing — it's part of the work.",
+      "Your future self is grateful you committed your code.",
+      "Curiosity beats talent before lunch.",
+    ];
+
+    function tell() {
+      const el = document.getElementById('result');
+      el.classList.remove('reveal');
+      void el.offsetWidth; // restart animation
+      el.textContent = '"' + FORTUNES[Math.floor(Math.random() * FORTUNES.length)] + '"';
+      el.classList.add('reveal');
+    }
+  </script>
+</body>
+</html>

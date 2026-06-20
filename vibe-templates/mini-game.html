@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dodge the Dots</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:system-ui,sans-serif; background:#101820; color:#e8f0ff; min-height:100vh; display:grid; place-content:center; text-align:center; padding:16px; }
+    h1 { font-size:1.3rem; margin-bottom:8px; }
+    p.hint { opacity:.6; font-size:.85rem; margin-bottom:12px; }
+    canvas { background:#0a1018; border:2px solid #2dd4bf; border-radius:12px; touch-action:none; max-width:100%; }
+    #score { margin-top:10px; font-weight:700; font-size:1.1rem; color:#2dd4bf; }
+  </style>
+</head>
+<body>
+  <h1>Dodge the Dots</h1>
+  <p class="hint">Move with ← → arrow keys or your mouse. Don't get hit.</p>
+  <canvas id="c" width="360" height="480"></canvas>
+  <div id="score">Score: 0</div>
+
+  <script>
+    const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+    const W = cv.width, H = cv.height;
+    let player, dots, score, alive, tick;
+
+    function reset() {
+      player = { x: W / 2, w: 36, h: 14 };
+      dots = [];
+      score = 0; alive = true; tick = 0;
+    }
+    reset();
+
+    addEventListener('keydown', e => {
+      if (e.key === 'ArrowLeft') player.x -= 26;
+      if (e.key === 'ArrowRight') player.x += 26;
+      if (!alive && e.key === ' ') reset();
+    });
+    cv.addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect();
+      player.x = (e.clientX - r.left) * (W / r.width);
+    });
+    cv.addEventListener('pointerdown', () => { if (!alive) reset(); });
+
+    function loop() {
+      ctx.clearRect(0, 0, W, H);
+      player.x = Math.max(player.w / 2, Math.min(W - player.w / 2, player.x));
+
+      if (alive) {
+        tick++;
+        if (tick % 24 === 0) dots.push({ x: Math.random() * W, y: -10, v: 2 + Math.random() * 2 + score * 0.02 });
+        for (const d of dots) d.y += d.v;
+        dots = dots.filter(d => {
+          if (d.y > H) { score++; return false; }
+          return true;
+        });
+        const py = H - 30;
+        for (const d of dots) {
+          if (d.y > py - 8 && d.y < py + player.h && Math.abs(d.x - player.x) < player.w / 2 + 7) alive = false;
+        }
+        document.getElementById('score').textContent = 'Score: ' + score;
+      }
+
+      ctx.fillStyle = '#2dd4bf';
+      ctx.fillRect(player.x - player.w / 2, H - 30, player.w, player.h);
+      ctx.fillStyle = '#f87171';
+      for (const d of dots) { ctx.beginPath(); ctx.arc(d.x, d.y, 7, 0, 7); ctx.fill(); }
+
+      if (!alive) {
+        ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.font = 'bold 26px system-ui';
+        ctx.fillText('Game Over', W / 2, H / 2 - 10);
+        ctx.font = '15px system-ui';
+        ctx.fillText('Tap or press space to retry', W / 2, H / 2 + 20);
+      }
+      requestAnimationFrame(loop);
+    }
+    loop();
+  </script>
+</body>
+</html>

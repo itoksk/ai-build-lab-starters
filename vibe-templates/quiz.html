@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3-Question Quiz</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:system-ui,sans-serif; background:#0f172a; color:#e2e8f0; min-height:100vh; display:grid; place-content:center; padding:24px; }
+    .card { background:#1e293b; border-radius:18px; padding:32px; width:min(440px,92vw); box-shadow:0 20px 60px rgba(0,0,0,.4); }
+    h1 { font-size:1.1rem; color:#38bdf8; margin-bottom:8px; }
+    .q { font-size:1.4rem; font-weight:700; margin:8px 0 20px; }
+    button.opt { display:block; width:100%; text-align:left; background:#334155; color:inherit; border:2px solid transparent; border-radius:12px; padding:14px 16px; margin-bottom:10px; font:inherit; cursor:pointer; transition:.15s; }
+    button.opt:hover { border-color:#38bdf8; }
+    .bar { height:6px; background:#334155; border-radius:99px; overflow:hidden; margin-bottom:20px; }
+    .bar > i { display:block; height:100%; background:#38bdf8; transition:width .3s; }
+    .result { text-align:center; }
+    .score { font-size:3.5rem; font-weight:900; color:#38bdf8; animation:pop .5s cubic-bezier(.2,1.4,.4,1); }
+    @keyframes pop { from { transform:scale(.4); opacity:0; } }
+    .again { background:#38bdf8; color:#0f172a; border:none; border-radius:99px; padding:12px 28px; font-weight:700; cursor:pointer; margin-top:18px; }
+  </style>
+</head>
+<body>
+  <div class="card" id="app"></div>
+
+  <script>
+    // Topic: AI basics — edit QUESTIONS for your own topic
+    const QUESTIONS = [
+      { q: "What does a 'token' roughly mean to an LLM?", a: ["A password", "A chunk of text", "A coin"], correct: 1 },
+      { q: "What does 'temperature' control?", a: ["GPU heat", "Randomness of output", "Training speed"], correct: 1 },
+      { q: "What is a 'prompt'?", a: ["The input you give the AI", "An error message", "A type of GPU"], correct: 0 },
+    ];
+
+    let i = 0, score = 0;
+    const app = document.getElementById('app');
+
+    function renderQuestion() {
+      const item = QUESTIONS[i];
+      app.innerHTML = `
+        <div class="bar"><i style="width:${(i/QUESTIONS.length)*100}%"></i></div>
+        <h1>Question ${i + 1} / ${QUESTIONS.length}</h1>
+        <div class="q">${item.q}</div>
+        ${item.a.map((opt, k) => `<button class="opt" onclick="answer(${k})">${opt}</button>`).join('')}`;
+    }
+
+    function answer(k) {
+      if (k === QUESTIONS[i].correct) score++;
+      i++;
+      i < QUESTIONS.length ? renderQuestion() : renderResult();
+    }
+
+    function renderResult() {
+      app.innerHTML = `
+        <div class="result">
+          <h1>Your score</h1>
+          <div class="score">${score} / ${QUESTIONS.length}</div>
+          <p>${score === QUESTIONS.length ? '🎉 Perfect!' : 'Nice try — go again!'}</p>
+          <button class="again" onclick="restart()">Play again</button>
+        </div>`;
+    }
+
+    function restart() { i = 0; score = 0; renderQuestion(); }
+    renderQuestion();
+  </script>
+</body>
+</html>
